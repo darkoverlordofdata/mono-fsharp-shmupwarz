@@ -7,10 +7,10 @@ let mutable timeToFire = 0.0f
 (** Get Player Input *)
 let InputSystem (kbState:KeyboardState, msState:MouseState, delta:float32, game:EcsGame) entity =
 
-    let rec HandleKeys keys (currentVelocity:Vector2) =
+    let rec HandleKeys keys =
         match keys with
         | [] -> 
-            Vector2(currentVelocity.X, currentVelocity.Y*0.5f)
+            0
         | x :: xs ->
             match x with
             | Keys.Z -> 
@@ -19,19 +19,13 @@ let InputSystem (kbState:KeyboardState, msState:MouseState, delta:float32, game:
                     game.AddEntity((CreateBullet game.Content) (Vector2(entity.Position.X-27.f, entity.Position.Y)))
                     game.AddEntity((CreateBullet game.Content) (Vector2(entity.Position.X+27.f, entity.Position.Y)))
                     timeToFire <- 0.1f
-
-
-                HandleKeys xs (currentVelocity)
+                HandleKeys xs 
             | _ -> 
-                HandleKeys xs (currentVelocity)
-
+                HandleKeys xs 
 
     match entity.EntityType with
     | Player -> 
-        let initialVelocity = 
-            match entity.BodyType with
-            | Dynamic(v) -> v
-            | _ -> Vector2()
+        HandleKeys(kbState.GetPressedKeys() |> Array.toList) |> ignore
         let position = 
             match msState.LeftButton with
             | ButtonState.Pressed ->
@@ -43,10 +37,9 @@ let InputSystem (kbState:KeyboardState, msState:MouseState, delta:float32, game:
             | _ ->
                 entity.Position
 
-        let velocity = HandleKeys(kbState.GetPressedKeys() |> Array.toList) (initialVelocity)
+        (* New Immutable Entity *)
         { 
             entity with 
-                BodyType = Dynamic(velocity); 
                 Position = position; 
         }
 

@@ -1,11 +1,9 @@
 ﻿<Properties StartupItem="Platformer/Platformer.fsproj">
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Release" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Platformer/Components.fs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Platformer/Systems/ScaleAnimationSystem.fs">
     <Files>
-      <File FileName="Platformer/PlatformerGame.fs" Line="32" Column="41" />
-      <File FileName="Platformer/Systems/CollisionSystem.fs" Line="29" Column="46" />
-      <File FileName="Platformer/Components.fs" Line="26" Column="5" />
-      <File FileName="Platformer/Entities.fs" Line="9" Column="1" />
+      <File FileName="Platformer/Systems/ScaleAnimationSystem.fs" Line="10" Column="77" />
+      <File FileName="Platformer/Components.fs" Line="43" Column="1" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>

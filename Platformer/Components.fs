@@ -10,29 +10,29 @@ type Layer =
     | BACKGROUND
     | TEXT
     | LIVES
-    | MINES
-    | ACTORS_1
-    | ACTORS_2
-    | ACTORS_3
+    | ENEMY1
+    | ENEMY2
+    | ENEMY3
     | PLAYER
     | BULLET
     | PARTICLE
     | HUD
 
-(** BodyType Component *)
-type BodyType =
-    | Static
-    | Dynamic of Vector2
+
+type Effect =
+    | PEW 
+    | ASPLODE
+    | SMALLASPLODE 
+
 
 (** EntityType Component *)
 type EntityType =
     | Background
     | Bullet
     | Enemy
-    | Mine
-    | Player
-    | Status
     | Explosion
+    | Particle
+    | Player
 
 (** Sprite Component *)
 type Sprite =
@@ -40,7 +40,6 @@ type Sprite =
         Width: int;
         Height: int;
         Texture : Texture2D;
-        Scale : Vector2;
     }
 
 (** Health Component *)
@@ -62,22 +61,24 @@ type ScaleAnimation =
 (** Entity is a record of components *)
 type Entity =
     {
-        Id : int;
+        Id : int; (* Unique sequential id *)
+        Name : string; (* Display name *)
 
-        EntityType : EntityType;
-        Size : Vector2;
-        Position : Vector2;
-        BodyType : BodyType;
-        Destroy : bool;
-        Layer : Layer;
-        // Optional Components
-        Sprite : Sprite option;
-        Bounds : int option;
-        Expires : float32 option;
-        Health : Health option;
-        Velocity : Vector2 option;
-        Scale : Vector2 option;
-        ScaleAnimation : ScaleAnimation option;
+        (* All entities are required to have: *)
+        EntityType  : EntityType;
+        Size        : Vector2;
+        Position    : Vector2;
+        Layer       : Layer;
+        Destroy     : bool;
+
+        (* Optional components - used for match by systems *)
+        Sprite          : Sprite option;
+        Bounds          : int option;
+        Expires         : float32 option;
+        Health          : Health option;
+        Velocity        : Vector2 option;
+        Scale           : Vector2 option;
+        ScaleAnimation  : ScaleAnimation option;
     }
 
 (** IGame Interface *)

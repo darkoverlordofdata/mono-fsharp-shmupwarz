@@ -33,12 +33,15 @@ type Platformer () as this =
     let DrawSprite(spriteBatch:SpriteBatch) entity =
         if entity.Sprite.IsSome then 
             let sprite = entity.Sprite.Value
-            let w = int(float32 sprite.Width * sprite.Scale.X)
-            let h = int(float32 sprite.Height * sprite.Scale.Y)
-            let x = entity.Position.X - float32(w/2)
-            let y = entity.Position.Y - float32(h/2)
-            let rect = System.Nullable(Rectangle(0, 0, w, h))
-            spriteBatch.Draw(sprite.Texture, Vector2(x, y), rect, Color.White)    
+            let scale =
+                match entity.Scale with
+                | Some(scale) -> scale
+                | None -> Vector2(1.f, 1.f)
+            let w = int(float32 sprite.Width * scale.X)
+            let h = int(float32 sprite.Height * scale.Y)
+            let x = int(entity.Position.X - float32(w/2))
+            let y = int(entity.Position.Y - float32(h/2))
+            spriteBatch.Draw(sprite.Texture, Rectangle(x, y, w, h), Color.White)    
 
     (** Draw a FPS in top left corner *)
     let DrawFps(spriteBatch:SpriteBatch, fps:float32)  =
@@ -89,7 +92,7 @@ type Platformer () as this =
 
     (** Game Logic Loop *)
     override this.Update (gameTime) =
-        let delta = float32 gameTime.ElapsedGameTime.TotalMilliseconds/1000.f
+        let delta = float32 gameTime.ElapsedGameTime.TotalSeconds
         let current = (Difference Entities.Value delEntities) @ newEntities
         delEntities <- List.empty<Entity>
         newEntities <- List.empty<Entity>
@@ -98,11 +101,11 @@ type Platformer () as this =
                  |> List.map (InputSystem(Keyboard.GetState(), Mouse.GetState(), delta, this))
                  |> List.map (MovementSystem delta)
                  |> List.map (ExpiringSystem delta)
-                 |> List.map (ScaleAnimationSystem delta)
+                 |> List.map (ScaleAnimationSystem(delta, this))
                  |> List.map (RemoveOffscreenShipsSystem this)
                  |> CollisionSystem this
                  |> List.map (DestroySystem this))
-                 |> EnemySpawningSystem(gameTime, this)
+                 |> EnemySpawningSystem(delta, this)
         Entities.Force() |> ignore
 
     (** Game Graphic Loop *)

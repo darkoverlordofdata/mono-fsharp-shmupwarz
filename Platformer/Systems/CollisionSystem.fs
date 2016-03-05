@@ -3,54 +3,24 @@ module CollisionSystem
 open Microsoft.Xna.Framework
 
 (** Return Rect defining the current bounds *)
-let CurrentBounds(this) =
-    Rectangle((int this.Position.X),(int this.Position.Y),(int this.Size.X),(int this.Size.Y))
-
-(** Return Rect defining the desired bounds *)
-let DesiredBounds(this) =
-    let desiredPos = 
-        match this.BodyType with
-        | Dynamic(s) -> this.Position + s
-        | _-> this.Position
-    Rectangle((int desiredPos.X), (int desiredPos.Y), (int this.Size.X), (int this.Size.Y))
-
-(** Is it Static or Moving? *)
-let IsEntityStatic entity =
-    match entity.BodyType with
-    | Static -> true
-    | _ -> false
-
-(** Seperate out the static entities *)
-let SeperateEntities entities =
-    entities
-    |> List.partition IsEntityStatic
+let BoundingRect(entity) =
+    Rectangle((int entity.Position.X),(int entity.Position.Y),(int entity.Size.X),(int entity.Size.Y))
 
 (** Collision Handler for Entities *)
 let CollisionSystem (game:EcsGame) entities =
-    let staticEntities, dynamicEntities = SeperateEntities entities
-    
-    let FindNewVelocity rect1 rect2 velocity =
-        let inter = Rectangle.Intersect(rect1,rect2)
-        let mutable (newVel:Vector2) = velocity
-        if inter.Height > inter.Width then
-            newVel.X <- 0.f
-        if inter.Width > inter.Height then
-            newVel.Y <- 0.f
-        newVel
 
     let FindOptimumCollision a b =
         match a.EntityType, b.EntityType with
         | Enemy, Bullet -> 
             game.RemoveEntity(a)
-            game.AddEntity(CreateSmallExplosion(game.Content, b.Position))
+            game.AddEntity(CreateExplosion(game.Content, b.Position, 0.25f))
             game.RemoveEntity(b)
             match a.Health with
             | Some(h) ->
                 let health = h.CurHealth-1
-                printfn "health %d" health
                 if health <= 0 then
                     game.RemoveEntity(a)
-                    game.AddEntity(CreateBigExplosion(game.Content, b.Position))
+                    game.AddEntity(CreateExplosion(game.Content, b.Position, 0.5f))
                     a
                 else
                     {
@@ -65,7 +35,8 @@ let CollisionSystem (game:EcsGame) entities =
         match sortedEntities with
         | [] -> entity
         | x :: xs -> 
-            let a = if (DesiredBounds(entity).Intersects(DesiredBounds(x))) then
+            //let a = if (DesiredBounds(entity).Intersects(DesiredBounds(x))) then
+            let a = if (BoundingRect(entity).Intersects(BoundingRect(x))) then
                         FindOptimumCollision entity x
                     else
                         entity
@@ -78,6 +49,6 @@ let CollisionSystem (game:EcsGame) entities =
             let a = FigureCollisions x alreadyFixed
             FixCollisions xs (a::alreadyFixed)
 
-    FixCollisions dynamicEntities staticEntities
+    FixCollisions entities []
 
 

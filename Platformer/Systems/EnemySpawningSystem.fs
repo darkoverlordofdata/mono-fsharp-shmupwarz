@@ -18,11 +18,11 @@ let mutable enemyT1 = float32(Timers.Timer1)
 let mutable enemyT2 = float32(Timers.Timer2)
 let mutable enemyT3 = float32(Timers.Timer3)
 
-let EnemySpawningSystem (gameTime:GameTime, game:EcsGame) entities =
+let EnemySpawningSystem (delta:float32, game:EcsGame) entities =
 
     //let igame = game:>IGame
     let spawnEnemy (t:float32, enemy) =
-        let delta = t - float32 gameTime.ElapsedGameTime.TotalSeconds
+        let delta = t - delta
 
         if delta < 0.0f then
             match enemy with

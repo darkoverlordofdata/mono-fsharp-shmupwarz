@@ -1,7 +1,10 @@
 ﻿[<AutoOpen>]
 module ExpiringSystem
 open Microsoft.Xna.Framework
-(** Expiring System *)
+(** 
+ * Expiring System 
+ *
+ *)
 let ExpiringSystem (delta:float32) entity =
     match entity.Expires with
     | Some(v) ->
