@@ -5,13 +5,9 @@ open Microsoft.Xna.Framework
 open Microsoft.Xna.Framework.Graphics
 open Microsoft.Xna.Framework.Input
 open System.Collections.Generic
-open Components
-open PhysicsSystem
-open Systems
-open InputHandler
 
 type Platformer () as this =
-    inherit Game()
+    inherit EcsGame()
 
     let mutable first = true
     let mutable spriteBatch = Unchecked.defaultof<SpriteBatch>
@@ -27,7 +23,6 @@ type Platformer () as this =
     let mutable newEntities = List.empty<Entity>
     let mutable delEntities = List.empty<Entity>
     let bgdImage = lazy(this.Content.Load<Texture2D>("images/BackdropBlackLittleSparkBlack.png"))
-    // 512 x 96 (32 x 4) each cell 16 x 24
     let mutable fpsRect = Rectangle(0, 0, 16, 24)
 
     let fntImage = lazy(this.Content.Load<Texture2D>("tom-thumb-white.png"))
@@ -35,15 +30,18 @@ type Platformer () as this =
     let player = lazy((CreatePlayer this.Content) (Vector2(float32(ScreenWidth/2), float32 (ScreenHeight-80))))
 
     (** Draw the sprite for an Entity *)
-    let DrawSprite (spriteBatch:SpriteBatch) entity =
+    let DrawSprite(spriteBatch:SpriteBatch) entity =
         if entity.Sprite.IsSome then 
             let sprite = entity.Sprite.Value
-            let x = entity.Position.X - entity.Size.X/2.f
-            let y = entity.Position.Y - entity.Size.Y/2.f
-            spriteBatch.Draw(sprite.Texture, Vector2(x, y), sprite.Rect, Color.White)    
+            let w = int(float32 sprite.Width * sprite.Scale.X)
+            let h = int(float32 sprite.Height * sprite.Scale.Y)
+            let x = entity.Position.X - float32(w/2)
+            let y = entity.Position.Y - float32(h/2)
+            let rect = System.Nullable(Rectangle(0, 0, w, h))
+            spriteBatch.Draw(sprite.Texture, Vector2(x, y), rect, Color.White)    
 
     (** Draw a FPS in top left corner *)
-    let DrawFps (spriteBatch:SpriteBatch, fps:float32)  =
+    let DrawFps(spriteBatch:SpriteBatch, fps:float32)  =
         let ms = int fps
         let d0 = ms / 10        // 9x.xx
         let d1 = ms - d0*10     // x9.xx
@@ -70,19 +68,19 @@ type Platformer () as this =
 
     
 
-    interface IGame with
-        member this.addEntity(entity:Entity)=
-            newEntities <- entity :: newEntities
+    //interface IGame with
+    override this.AddEntity(entity:Entity)=
+        newEntities <- entity :: newEntities
 
-        member this.delEntity(entity:Entity)=
-            delEntities <- entity :: delEntities
+    override this.RemoveEntity(entity:Entity)=
+        delEntities <- entity :: delEntities
 
     (** Initialize MonoGame *)
     override this.Initialize() =
         spriteBatch <- new SpriteBatch(this.GraphicsDevice)
         this.IsMouseVisible <- true
         base.Initialize()
-        (this:>IGame).addEntity(player.Value)
+        this.AddEntity(player.Value)
 
 
     (** Load Resources *)
@@ -91,18 +89,20 @@ type Platformer () as this =
 
     (** Game Logic Loop *)
     override this.Update (gameTime) =
-        // Remove deleted entities
-        // Add the new entities
+        let delta = float32 gameTime.ElapsedGameTime.TotalMilliseconds/1000.f
         let current = (Difference Entities.Value delEntities) @ newEntities
         delEntities <- List.empty<Entity>
         newEntities <- List.empty<Entity>
-        Entities <- 
+        Entities <-  // Everything happens here:
             lazy (current
-                 |> List.map (InputSystem(Keyboard.GetState(), Mouse.GetState(), this, this))
-                 |> List.map (MovementSystem gameTime)
-                 |> List.map (ExpiringSystem gameTime)
-                 |> CollisionSystem
+                 |> List.map (InputSystem(Keyboard.GetState(), Mouse.GetState(), delta, this))
+                 |> List.map (MovementSystem delta)
+                 |> List.map (ExpiringSystem delta)
+                 |> List.map (ScaleAnimationSystem delta)
+                 |> List.map (RemoveOffscreenShipsSystem this)
+                 |> CollisionSystem this
                  |> List.map (DestroySystem this))
+                 |> EnemySpawningSystem(gameTime, this)
         Entities.Force() |> ignore
 
     (** Game Graphic Loop *)
@@ -112,7 +112,7 @@ type Platformer () as this =
         spriteBatch.Begin()
         spriteBatch.Draw(bgdImage.Value, bgdRect, Color.White)   
         DrawFps(spriteBatch, 1.f / float32 gameTime.ElapsedGameTime.TotalSeconds)
-        Entities.Value |> List.sortBy(fun x -> x.Id) |> List.iter(DrawSprite spriteBatch)
+        Entities.Value |> List.sortBy(fun x -> x.Layer) |> List.iter(DrawSprite spriteBatch)
         spriteBatch.End()
 
 

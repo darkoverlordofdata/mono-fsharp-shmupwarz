@@ -1,6 +1,6 @@
-﻿module PhysicsSystem
+﻿[<AutoOpen>]
+module CollisionSystem
 open Microsoft.Xna.Framework
-open Components
 
 (** Return Rect defining the current bounds *)
 let CurrentBounds(this) =
@@ -26,7 +26,7 @@ let SeperateEntities entities =
     |> List.partition IsEntityStatic
 
 (** Collision Handler for Entities *)
-let CollisionSystem entities =
+let CollisionSystem (game:EcsGame) entities =
     let staticEntities, dynamicEntities = SeperateEntities entities
     
     let FindNewVelocity rect1 rect2 velocity =
@@ -39,18 +39,26 @@ let CollisionSystem entities =
         newVel
 
     let FindOptimumCollision a b =
-        match a.EntityType,b.EntityType with
-        | Player(h), Mine -> 
-            match a.BodyType, b.BodyType with
-            | Dynamic (s), Static -> 
-                let r1 = DesiredBounds(a)
-                let r2 = CurrentBounds(b)
-                { 
-                    a with 
-                        BodyType = Dynamic(FindNewVelocity r1 r2 s); 
-                        EntityType = Player(Nothing) 
-                }
-            | _ -> a
+        match a.EntityType, b.EntityType with
+        | Enemy, Bullet -> 
+            game.RemoveEntity(a)
+            game.AddEntity(CreateSmallExplosion(game.Content, b.Position))
+            game.RemoveEntity(b)
+            match a.Health with
+            | Some(h) ->
+                let health = h.CurHealth-1
+                printfn "health %d" health
+                if health <= 0 then
+                    game.RemoveEntity(a)
+                    game.AddEntity(CreateBigExplosion(game.Content, b.Position))
+                    a
+                else
+                    {
+                        a with 
+                            Health = Some(CreateHealth(health, h.MaxHealth));
+                    }
+
+            | None -> a
         | _ -> a
 
     let rec FigureCollisions (entity:Entity) (sortedEntities:Entity list) =
@@ -71,40 +79,5 @@ let CollisionSystem entities =
             FixCollisions xs (a::alreadyFixed)
 
     FixCollisions dynamicEntities staticEntities
-
-
-(** Gravity *)
-let GravitySystemExecute (gameTime:GameTime) entity =
-    let ms = gameTime.ElapsedGameTime.TotalMilliseconds
-    let g = ms * 0.01
-    match entity.BodyType with
-    | Dynamic(s) -> 
-        let d = Vector2(s.X, s.Y + (float32 g))
-        { 
-            entity with 
-                BodyType = Dynamic(d); 
-        }
-    | _ -> entity
-
-(** Friction *)
-let FrictionSystemExecute entity = 
-    match entity.BodyType with
-    | Dynamic (v) -> 
-        let newV = Vector2(v.X*0.95f, v.Y)
-        { 
-            entity with 
-                BodyType = Dynamic(newV) 
-        }
-    | _ -> entity
-
-(** Movement System *)
-let VelocitySystemExecute entity =
-    match entity.BodyType with
-    | Dynamic (s) -> 
-        { 
-            entity with 
-                Position = entity.Position + s 
-        }
-    | _ -> entity
 
 
