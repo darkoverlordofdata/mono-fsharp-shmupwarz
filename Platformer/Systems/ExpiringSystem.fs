@@ -4,6 +4,7 @@ open Microsoft.Xna.Framework
 (** 
  * Expiring System 
  *
+ * Destroy entities when their time is up
  *)
 let ExpiringSystem (delta:float32) entity =
     match entity.Expires with

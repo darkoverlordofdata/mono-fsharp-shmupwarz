@@ -46,7 +46,7 @@ let CreateScaleAnimation(min: float32, max: float32, speed: float32, repeat: boo
 
 
 (** Create a Player Entity *)
-let CreatePlayer (content:ContentManager) (position) =
+let CreatePlayer (content:ContentManager, position) =
     let sprite = CreateSprite(Layer.PLAYER, content.Load<Texture2D>("images/fighter.png"))
     {
         Id = NextUniqueId();
@@ -67,7 +67,7 @@ let CreatePlayer (content:ContentManager) (position) =
     }
      
 (** Create a Bullet Entity *)
-let CreateBullet (content:ContentManager) (position) =
+let CreateBullet (content:ContentManager, position) =
     let sprite = CreateSprite(Layer.BULLET, content.Load<Texture2D>("images/bullet.png"))
     {
         Id = NextUniqueId();

@@ -3,11 +3,6 @@ module EnemySpawningSystem
 
 open Microsoft.Xna.Framework
 
-type Enemies =
-    | Enemy1
-    | Enemy2
-    | Enemy3
-
 type Timers =
     | Timer1 = 2
     | Timer2 = 6
@@ -25,17 +20,11 @@ let EnemySpawningSystem (delta:float32, game:EcsGame) entities =
         let delta = t - delta
 
         if delta < 0.0f then
+            game.AddEnemy(enemy)
             match enemy with
-            | Enemy1 -> 
-                game.AddEntity(CreateEnemy1(game.Content))
-                float32(Timers.Timer1)
-            | Enemy2 ->
-                game.AddEntity(CreateEnemy2(game.Content))
-                float32(Timers.Timer2)
-            | Enemy3 ->
-                game.AddEntity(CreateEnemy3(game.Content))
-                float32(Timers.Timer3)
-
+            | Enemy1 -> float32(Timers.Timer1)
+            | Enemy2 -> float32(Timers.Timer2)
+            | Enemy3 -> float32(Timers.Timer3)
         else delta
 
     enemyT1 <- spawnEnemy(enemyT1, Enemy1)

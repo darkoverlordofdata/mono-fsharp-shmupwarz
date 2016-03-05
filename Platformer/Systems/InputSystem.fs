@@ -16,8 +16,8 @@ let InputSystem (kbState:KeyboardState, msState:MouseState, delta:float32, game:
             | Keys.Z -> 
                 timeToFire <- timeToFire - delta
                 if timeToFire <= 0.0f then
-                    game.AddEntity((CreateBullet game.Content) (Vector2(entity.Position.X-27.f, entity.Position.Y)))
-                    game.AddEntity((CreateBullet game.Content) (Vector2(entity.Position.X+27.f, entity.Position.Y)))
+                    game.AddBullet((Vector2(entity.Position.X-27.f, entity.Position.Y)))
+                    game.AddBullet((Vector2(entity.Position.X+27.f, entity.Position.Y)))
                     timeToFire <- 0.1f
                 HandleKeys xs 
             | _ -> 

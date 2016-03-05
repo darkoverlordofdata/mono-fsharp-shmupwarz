@@ -19,7 +19,7 @@ type Platformer () as this =
         graphics.ApplyChanges()
 
     (** Define Entities *)
-    let mutable Entities = lazy([])
+    let mutable Entities = lazy( List.empty<Entity>)
     let mutable newEntities = List.empty<Entity>
     let mutable delEntities = List.empty<Entity>
     let bgdImage = lazy(this.Content.Load<Texture2D>("images/BackdropBlackLittleSparkBlack.png"))
@@ -27,7 +27,7 @@ type Platformer () as this =
 
     let fntImage = lazy(this.Content.Load<Texture2D>("tom-thumb-white.png"))
     let bgdRect = Rectangle(0, 0, ScreenWidth, ScreenHeight)
-    let player = lazy((CreatePlayer this.Content) (Vector2(float32(ScreenWidth/2), float32 (ScreenHeight-80))))
+    let player = lazy(this.CreatePlayer())
 
     (** Draw the sprite for an Entity *)
     let DrawSprite(spriteBatch:SpriteBatch) entity =
@@ -98,14 +98,14 @@ type Platformer () as this =
         newEntities <- List.empty<Entity>
         Entities <-  // Everything happens here:
             lazy (current
-                 |> List.map (InputSystem(Keyboard.GetState(), Mouse.GetState(), delta, this))
-                 |> List.map (MovementSystem delta)
-                 |> List.map (ExpiringSystem delta)
-                 |> List.map (ScaleAnimationSystem(delta, this))
-                 |> List.map (RemoveOffscreenShipsSystem this)
-                 |> CollisionSystem this
-                 |> List.map (DestroySystem this))
-                 |> EnemySpawningSystem(delta, this)
+                 |> List.map(InputSystem(Keyboard.GetState(), Mouse.GetState(), delta, this))
+                 |> List.map(MovementSystem delta)
+                 |> List.map(ExpiringSystem delta)
+                 |> List.map(ScaleAnimationSystem(delta, this))
+                 |> List.map(RemoveOffscreenShipsSystem this)
+                 |> CollisionSystem(this)
+                 |> List.map(DestroySystem this)
+                 |> EnemySpawningSystem(delta, this))
         Entities.Force() |> ignore
 
     (** Game Graphic Loop *)
@@ -118,6 +118,21 @@ type Platformer () as this =
         Entities.Value |> List.sortBy(fun x -> x.Layer) |> List.iter(DrawSprite spriteBatch)
         spriteBatch.End()
 
+    override this.CreatePlayer() =
+        CreatePlayer(this.Content, Vector2(float32(ScreenWidth/2), float32 (ScreenHeight-80)))
 
+    override this.AddBullet(position : Vector2) =
+        this.AddEntity(CreateBullet(this.Content, position))
+
+    override this.AddEnemy(enemy : Enemies) =
+        let enemy =
+            match enemy with
+            | Enemy1 -> (CreateEnemy1(this.Content))
+            | Enemy2 -> (CreateEnemy2(this.Content))
+            | Enemy3 -> (CreateEnemy3(this.Content))
+        this.AddEntity(enemy)
+
+    override this.AddExplosion(position : Vector2, scale : float32) =
+        this.AddEntity(CreateExplosion(this.Content, position, scale))
 
 

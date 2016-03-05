@@ -9,18 +9,18 @@ let BoundingRect(entity) =
 (** Collision Handler for Entities *)
 let CollisionSystem (game:EcsGame) entities =
 
-    let FindOptimumCollision a b =
+    let FindCollision a b =
         match a.EntityType, b.EntityType with
         | Enemy, Bullet -> 
             game.RemoveEntity(a)
-            game.AddEntity(CreateExplosion(game.Content, b.Position, 0.25f))
+            game.AddExplosion(b.Position, 0.25f)
             game.RemoveEntity(b)
             match a.Health with
             | Some(h) ->
                 let health = h.CurHealth-1
                 if health <= 0 then
                     game.RemoveEntity(a)
-                    game.AddEntity(CreateExplosion(game.Content, b.Position, 0.5f))
+                    game.AddExplosion(b.Position, 0.5f)
                     a
                 else
                     {
@@ -35,9 +35,8 @@ let CollisionSystem (game:EcsGame) entities =
         match sortedEntities with
         | [] -> entity
         | x :: xs -> 
-            //let a = if (DesiredBounds(entity).Intersects(DesiredBounds(x))) then
             let a = if (BoundingRect(entity).Intersects(BoundingRect(x))) then
-                        FindOptimumCollision entity x
+                        FindCollision entity x
                     else
                         entity
             FigureCollisions a xs

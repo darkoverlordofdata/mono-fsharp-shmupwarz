@@ -34,6 +34,12 @@ type EntityType =
     | Particle
     | Player
 
+type Enemies =
+    | Enemy1
+    | Enemy2
+    | Enemy3
+
+
 (** Sprite Component *)
 type Sprite =
     {
@@ -87,6 +93,7 @@ type EcsGame()=
     inherit Game()
     abstract member AddEntity: Entity -> unit
     abstract member RemoveEntity: Entity -> unit
-
-
-
+    abstract member CreatePlayer : unit -> Entity
+    abstract member AddBullet : Vector2 -> unit
+    abstract member AddEnemy : Enemies -> unit 
+    abstract member AddExplosion : Vector2 * float32 -> unit
