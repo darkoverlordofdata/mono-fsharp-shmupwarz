@@ -10,18 +10,19 @@ let BoundingRect(entity) =
 let CollisionSystem (game:EcsGame) entities =
 
     let FindCollision a b =
-        match a.EntityType, b.EntityType with
-        | Enemy, Bullet -> 
-            game.RemoveEntity(a)
+        match a.EntityType, a.Active, b.EntityType, b.Active with
+        | Enemy, true, Bullet, true -> 
             game.AddExplosion(b.Position, 0.25f)
             game.RemoveEntity(b)
             match a.Health with
             | Some(h) ->
                 let health = h.CurHealth-1
                 if health <= 0 then
-                    game.RemoveEntity(a)
                     game.AddExplosion(b.Position, 0.5f)
-                    a
+                    {
+                        a with
+                            Active = false;
+                    }
                 else
                     {
                         a with 

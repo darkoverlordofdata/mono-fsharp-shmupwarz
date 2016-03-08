@@ -30,6 +30,8 @@ let InputSystem (kbState:KeyboardState, msState:MouseState, delta:float32, game:
             match msState.LeftButton with
             | ButtonState.Pressed ->
                 let pos = game.Window.Position
+                //game.AddBullet(Vector2(float32 (msState.X-pos.X-27), float32 (msState.Y-pos.Y)))
+                //game.AddBullet(Vector2(float32 (msState.X-pos.X+27), float32 (msState.Y-pos.Y)))
                 Vector2(float32 (msState.X-pos.X), float32 (msState.Y-pos.Y))
 
             | ButtonState.Released ->
@@ -37,7 +39,7 @@ let InputSystem (kbState:KeyboardState, msState:MouseState, delta:float32, game:
             | _ ->
                 entity.Position
 
-        (* New Immutable Entity *)
+        (* Set Player Position *)
         { 
             entity with 
                 Position = position; 

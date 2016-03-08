@@ -7,13 +7,14 @@ open Microsoft.Xna.Framework
  * Destroy entities when their time is up
  *)
 let ExpiringSystem (delta:float32) entity =
-    match entity.Expires with
-    | Some(v) ->
+    match entity.Expires, entity.Active with
+    | Some(v), true ->
         let exp = v - delta
+        let active = if exp > 0.f then true else false
         { 
             entity with 
                 Expires = Some(exp);
-                Destroy = if exp > 0.f then false else true;
+                Active = active;
         }
-    | None -> entity
+    | _ -> entity
 

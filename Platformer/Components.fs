@@ -15,6 +15,7 @@ type Layer =
     | ENEMY3
     | PLAYER
     | BULLET
+    | EXPLOSION
     | PARTICLE
     | HUD
 
@@ -64,6 +65,22 @@ type ScaleAnimation =
         Active : bool;
     }
 
+
+type TEnemy =
+    {
+        Enemy : Enemies;
+    }
+type TExplosion =
+    {
+        Position : Vector2;
+        Scale : float32;
+    }
+type TBullet =
+    {
+        Position : Vector2;
+    }
+
+
 (** Entity is a record of components *)
 type Entity =
     {
@@ -71,11 +88,11 @@ type Entity =
         Name : string; (* Display name *)
 
         (* All entities are required to have: *)
+        Active      : bool;
         EntityType  : EntityType;
+        Layer       : Layer;
         Size        : Vector2;
         Position    : Vector2;
-        Layer       : Layer;
-        Destroy     : bool;
 
         (* Optional components - used for match by systems *)
         Sprite          : Sprite option;
@@ -87,13 +104,24 @@ type Entity =
         ScaleAnimation  : ScaleAnimation option;
     }
 
-(** IGame Interface *)
+(**
+ * The abstract EscGame provides interface and lists to
+ * use for adding and removing entities
+ *)
 [<AbstractClass>]
 type EcsGame()=
     inherit Game()
-    abstract member AddEntity: Entity -> unit
+
+    member val Bullets = List.empty<TBullet> with get,set
+    member val Enemies1 = List.empty<TEnemy> with get,set
+    member val Enemies2 = List.empty<TEnemy> with get,set
+    member val Enemies3 = List.empty<TEnemy> with get,set
+    member val Explosions = List.empty<TExplosion> with get,set
+    member val Deactivate = List.empty<int> with get,set
+
     abstract member RemoveEntity: Entity -> unit
-    abstract member CreatePlayer : unit -> Entity
     abstract member AddBullet : Vector2 -> unit
     abstract member AddEnemy : Enemies -> unit 
     abstract member AddExplosion : Vector2 * float32 -> unit
+
+

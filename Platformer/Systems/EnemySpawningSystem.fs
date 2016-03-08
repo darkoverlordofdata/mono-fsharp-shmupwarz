@@ -5,8 +5,8 @@ open Microsoft.Xna.Framework
 
 type Timers =
     | Timer1 = 2
-    | Timer2 = 6
-    | Timer3 = 12
+    | Timer2 = 7
+    | Timer3 = 13
 
 
 let mutable enemyT1 = float32(Timers.Timer1)

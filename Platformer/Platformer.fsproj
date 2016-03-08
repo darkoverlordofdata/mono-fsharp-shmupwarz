@@ -54,13 +54,14 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Components.fs" />
+    <Compile Include="Entity.fs" />
     <Compile Include="Entities.fs" />
+    <Compile Include="Systems\EntitySystem.fs" />
     <Compile Include="Systems\CollisionSystem.fs" />
     <Compile Include="Systems\EnemySpawningSystem.fs" />
     <Compile Include="Systems\InputSystem.fs" />
     <Compile Include="Systems\MovementSystem.fs" />
     <Compile Include="Systems\ExpiringSystem.fs" />
-    <Compile Include="Systems\DestroySystem.fs" />
     <Compile Include="Systems\RemoveOffscreenShipsSystem.fs" />
     <Compile Include="Systems\ScaleAnimationSystem.fs" />
     <Compile Include="PlatformerGame.fs" />
