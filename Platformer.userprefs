@@ -1,10 +1,8 @@
 ﻿<Properties StartupItem="Platformer/Platformer.fsproj">
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Release" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Platformer/Systems/RemoveOffscreenShipsSystem.fs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Platformer/PlatformerGame.fs">
     <Files>
-      <File FileName="Platformer/Entity.fs" Line="144" Column="9" />
-      <File FileName="Platformer/PlatformerGame.fs" Line="11" Column="5" />
-      <File FileName="Platformer/Systems/RemoveOffscreenShipsSystem.fs" Line="13" Column="15" />
+      <File FileName="Platformer/PlatformerGame.fs" Line="58" Column="31" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>

@@ -24,7 +24,10 @@ let CreateTBullet(position : Vector2) : TBullet =
     }
     
 
-let CreateEntities(content) = 
+(**
+ * Create the Entity DataBase
+ *) 
+let CreateEntityDB(content) = 
     [
         CreatePlayer(content, Vector2(float32(ScreenWidth/2), float32 (ScreenHeight-80)));
         CreateExplosion(content, Vector2(0.f, 0.f), 1.f);

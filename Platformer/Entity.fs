@@ -8,8 +8,8 @@ open Microsoft.Xna.Framework.Content
  *
  *)
 
-let ScreenWidth = 640
-let ScreenHeight = 480
+let ScreenWidth = 480
+let ScreenHeight = 720
 let rnd = System.Random()
 let mutable UniqueId = 0
 let NextUniqueId() = 
@@ -33,6 +33,7 @@ let CreateHealth(curHealth: int, maxHealth : int) =
         MaxHealth = maxHealth;
     }
 
+(** Create a Scale Animation Component *)
 let CreateScaleAnimation(min: float32, max: float32, speed: float32, repeat: bool, active: bool) =
     {
         Min = min;

@@ -19,7 +19,7 @@ type Platformer () as this =
         graphics.ApplyChanges()
 
     (** Define Entities *)
-    let mutable Entities = lazy(CreateEntities(this.Content))
+    let mutable Entities = lazy(CreateEntityDB(this.Content))
     let bgdImage = lazy(this.Content.Load<Texture2D>("images/BackdropBlackLittleSparkBlack.png"))
     let mutable fpsRect = Rectangle(0, 0, 16, 24)
 
@@ -82,11 +82,11 @@ type Platformer () as this =
         Entities <-  // Everything happens here:
             lazy (current
                  |> List.map(InputSystem(Keyboard.GetState(), Mouse.GetState(), delta, this))
-                 |> List.map(EntitySystem this)
-                 |> List.map(MovementSystem delta)
-                 |> List.map(ExpiringSystem delta)
+                 |> List.map(EntitySystem(this))
+                 |> List.map(MovementSystem(delta))
+                 |> List.map(ExpiringSystem(delta))
                  |> List.map(ScaleAnimationSystem(delta, this))
-                 |> List.map(RemoveOffscreenShipsSystem this)
+                 |> List.map(RemoveOffscreenShipsSystem(this))
                  |> CollisionSystem(this)
                  |> EnemySpawningSystem(delta, this)
                  )
@@ -98,7 +98,10 @@ type Platformer () as this =
         spriteBatch.Begin()
         spriteBatch.Draw(bgdImage.Value, bgdRect, Color.White)   
         DrawFps(spriteBatch, 1.f / float32 gameTime.ElapsedGameTime.TotalSeconds)
-        Entities.Value |> List.filter(fun e -> e.Active) |> List.sortBy(fun e -> e.Layer) |> List.iter(DrawSprite spriteBatch)
+        Entities.Value 
+        |> List.filter(fun e -> e.Active) 
+        |> List.sortBy(fun e -> e.Layer) 
+        |> List.iter(DrawSprite(spriteBatch))
         spriteBatch.End()
 
     (** Deactivate an Entity *)

@@ -3,6 +3,9 @@ module ComponentsModule
 open Microsoft.Xna.Framework
 open Microsoft.Xna.Framework.Graphics
 open Microsoft.Xna.Framework.Content
+(** 
+ * Metadata to define the entity database
+ *)
 
 (** Layer - All entities need a display layer *)
 type Layer =
@@ -20,6 +23,7 @@ type Layer =
     | HUD
 
 
+(** Sound Effect Component *)
 type Effect =
     | PEW 
     | ASPLODE
@@ -35,6 +39,7 @@ type EntityType =
     | Particle
     | Player
 
+(** Enemy Type Component *)
 type Enemies =
     | Enemy1
     | Enemy2
@@ -56,6 +61,7 @@ type Health =
         MaxHealth: int;
     }
 
+(** ScaleAnimation Component *)
 type ScaleAnimation =
     {
         Min : float32;
@@ -66,15 +72,18 @@ type ScaleAnimation =
     }
 
 
+(** Request an enemy *)
 type TEnemy =
     {
         Enemy : Enemies;
     }
+(** Request an explosion *)
 type TExplosion =
     {
         Position : Vector2;
         Scale : float32;
     }
+(** Request a bullet *)
 type TBullet =
     {
         Position : Vector2;
@@ -86,9 +95,9 @@ type Entity =
     {
         Id : int; (* Unique sequential id *)
         Name : string; (* Display name *)
+        Active : bool; (* In use *)
 
         (* All entities are required to have: *)
-        Active      : bool;
         EntityType  : EntityType;
         Layer       : Layer;
         Size        : Vector2;
@@ -113,15 +122,15 @@ type EcsGame()=
     inherit Game()
 
     member val Bullets = List.empty<TBullet> with get,set
+    member val Deactivate = List.empty<int> with get,set
     member val Enemies1 = List.empty<TEnemy> with get,set
     member val Enemies2 = List.empty<TEnemy> with get,set
     member val Enemies3 = List.empty<TEnemy> with get,set
     member val Explosions = List.empty<TExplosion> with get,set
-    member val Deactivate = List.empty<int> with get,set
 
-    abstract member RemoveEntity: Entity -> unit
     abstract member AddBullet : Vector2 -> unit
     abstract member AddEnemy : Enemies -> unit 
     abstract member AddExplosion : Vector2 * float32 -> unit
+    abstract member RemoveEntity: Entity -> unit
 
 
