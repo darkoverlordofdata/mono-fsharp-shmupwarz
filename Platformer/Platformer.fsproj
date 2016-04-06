@@ -8,7 +8,6 @@
     <OutputType>Exe</OutputType>
     <RootNamespace>Platformer</RootNamespace>
     <AssemblyName>Platformer</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <Name>Platformer</Name>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">

@@ -1,10 +1,6 @@
 ﻿<Properties StartupItem="Platformer/Platformer.fsproj">
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Release" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Platformer/PlatformerGame.fs">
-    <Files>
-      <File FileName="Platformer/PlatformerGame.fs" Line="58" Column="31" />
-    </Files>
-  </MonoDevelop.Ide.Workbench>
+  <MonoDevelop.Ide.Workbench />
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
     <BreakpointStore />
   </MonoDevelop.Ide.DebuggingService.Breakpoints>
